@@ -69,4 +69,3 @@ def Decrypt(EncryptedText: str, Key: str):
 		return PlainText
 	else:
 		return "[ERROR] Hashing Algorithm header is corrupted."
-
