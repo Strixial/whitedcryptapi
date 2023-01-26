@@ -1,5 +1,5 @@
-from fastapi import FastAPI, Request, Header
-import Whitecrypt
+from fastapi import FastAPI
+import WhitedCrypt
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -7,68 +7,71 @@ app = FastAPI()
 
 @app.get("/")
 async def root():
-  return "dumbass"
+	return "dumbass"
 
 class EncodePayload(BaseModel):
-    plaintext: str
+	mappingmethod: int
+	plaintext: str
+    
 
 @app.post("/encode")
 async def encode(payload: EncodePayload):
-    plaintext = payload.plaintext
-    try:
-        encoded = Whitecrypt.Encode(plaintext)
-    except:
-        return {"success": False}
-    return {"success": True, "result": encoded}
+	mappingmethod = payload.mappingmethod
+	plaintext = payload.plaintext
+	try:
+		encoded = WhitedCrypt.Encode(mappingmethod, plaintext)
+	except:
+		return {"success": False}
+	return {"success": True, "result": encoded}
 
 # Decode endpoint
 
 class DecodePayload(BaseModel):
-    ciphertext: str
+	ciphertext: str
 
 @app.post("/decode")
 async def decode(payload: DecodePayload):
-    ciphertext = payload.ciphertext
-    
-    try:
-        decoded = Whitecrypt.Decode(ciphertext)
-    except:
-        return {"success": False}
-        
-    return {"success": True, "result": decoded}
+	ciphertext = payload.ciphertext
+	
+	try:
+		decoded = WhitedCrypt.Decode(ciphertext)
+	except:
+		return {"success": False}
+	return {"success": True, "result": decoded}
 
 # Encrypt endpoint
 
 class EncryptPayload(BaseModel):
-    plaintext: str
-    key: str
+	hashing_algorithm_name: str
+	is_mapped: bool
+	plaintext: str
+	key: str
 
 @app.post("/encrypt")
 async def encrypt(payload: EncryptPayload):
-    plaintext = payload.plaintext
-    key = payload.key
-    try:
-        encrypted = Whitecrypt.Encrypt(plaintext, key)
-    except:
-        return {"success": False}
-        
-    return {"success": True, "result": encrypted}
+	hashing_algorithm_name = payload.hashing_algorithm_name
+	is_mapped = payload.is_mapped
+	plaintext = payload.plaintext
+	key = payload.key
+	try:
+		encrypted = WhitedCrypt.Encrypt(hashing_algorithm_name, is_mapped, plaintext, key)
+	except:
+		return {"success": False}
+	return {"success": True, "result": encrypted}
 
 # Decrypt endpoint
 
 class DecryptPayload(BaseModel):
-    ciphertext: str
-    key: str
+	ciphertext: str
+	key: str
 
 @app.post("/decrypt")
 async def decrypt(payload: DecryptPayload):
-    ciphertext = payload.ciphertext
-    key = payload.key
+	ciphertext = payload.ciphertext
+	key = payload.key
+	try:
+		decrypted = WhitedCrypt.Decrypt(ciphertext, key)
+	except:
+		return {"success": False}
+	return {"success": True, "result": decrypted}
 
-    try:
-        decrypted = Whitecrypt.Decrypt(ciphertext, key)
-    except:
-        return {"success": False}
-
-    return {"success": True, "result": decrypted}
-    
